@@ -44,11 +44,13 @@ class MapComponent extends React.Component {
           AMap.event.addListener(self.geolocation, "error", onError);
           function onComplete(data) {
             console.log(data);
+            self.setState({ markerVisible: true });
             self.updateLocation(data.position);
           }
 
           function onError(data) {
             console.log(data);
+            self.setState({ markerVisible: true });
           }
         });
       },
@@ -67,6 +69,7 @@ class MapComponent extends React.Component {
     this.state = {
       position: { longitude: 116.397264, latitude: 39.909146 },
       currentLocation: "点击地图任意位置",
+      markerVisible: false,
     };
     this.mapPlugins = ["ToolBar"];
   }
@@ -109,6 +112,7 @@ class MapComponent extends React.Component {
       >
         <Marker
           position={this.state.position}
+          visible={this.state.markerVisible}
           events={this.markerEvents}
           draggable
         />
