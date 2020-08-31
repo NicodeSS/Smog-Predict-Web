@@ -20,12 +20,36 @@ class MapComponent extends React.Component {
     this.map = null;
     this.marker = null;
     this.geocoder = null;
+    this.geolocation = null;
     this.mapEvents = {
       created(map) {
         self.map = map;
         const AMap = window.AMap;
         AMap.plugin("AMap.Geocoder", () => {
           self.geocoder = new AMap.Geocoder({ city: "全国" });
+        });
+        AMap.plugin("AMap.Geolocation", () => {
+          self.geolocation = new AMap.Geolocation({
+            // geolocation timeout, default: inf
+            timeout: 10000,
+            //  adjust zoom when succeed, default: false
+            zoomToAccuracy: true,
+            showMarker: true,
+            showCircle: true,
+          });
+          // add control privilege to geolocation
+          self.map.addControl(self.geolocation);
+          self.geolocation.getCurrentPosition();
+          AMap.event.addListener(self.geolocation, "complete", onComplete);
+          AMap.event.addListener(self.geolocation, "error", onError);
+          function onComplete(data) {
+            console.log(data);
+            self.updateLocation(data.position);
+          }
+
+          function onError(data) {
+            console.log(data);
+          }
         });
       },
       click(e) {
@@ -79,6 +103,7 @@ class MapComponent extends React.Component {
     return (
       <Map
         events={this.mapEvents}
+        center={this.state.position}
         amapkey={privInfo.AMAP_KEY}
         plugins={this.mapPlugins}
       >
