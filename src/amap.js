@@ -1,6 +1,4 @@
 import React from "react";
-
-import privInfo from "./private";
 import { Map, Marker } from "react-amap";
 
 const layerStyle = {
@@ -107,7 +105,7 @@ class MapComponent extends React.Component {
       <Map
         events={this.mapEvents}
         center={this.state.position}
-        amapkey={privInfo.AMAP_KEY}
+        amapkey={process.env.REACT_APP_AMAP_API_KEY}
         plugins={this.mapPlugins}
       >
         <Marker
