@@ -3,7 +3,7 @@ import { Map, Marker } from "react-amap";
 
 const layerStyle = {
   padding: "10px",
-  background: "#fff",
+  background: "#121212",
   border: "1px solid #ddd",
   borderRadius: "4px",
   position: "absolute",
