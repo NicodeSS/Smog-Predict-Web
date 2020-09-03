@@ -26,10 +26,10 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@v2.0.7
+        uses: easingthemes/ssh-deploy@v2.1.4
         env:
           SSH_PRIVATE_KEY: ${{secrets.HOST_SSH_KEY}}
-          ARGS: "-avz --delete"
+          ARGS: "-avzr --delete"
           SOURCE: "build/"
           REMOTE_HOST: ${{secrets.REMOTE_HOST}}
           REMOTE_USER: ${{secrets.REMOTE_USER}}
