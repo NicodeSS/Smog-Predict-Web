@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "axios": "^0.20.0",
+    "echarts": "^4.9.0",
+    "echarts-for-react": "^2.0.16",
     "react": "^16.13.1",
     "react-amap": "^1.2.8",
     "react-dom": "^16.13.1",
