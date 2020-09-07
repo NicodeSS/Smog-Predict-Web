@@ -1,15 +1,6 @@
 import React from "react";
 import { Map, Marker } from "react-amap";
-
-const layerStyle = {
-  padding: "10px",
-  background: "#121212",
-  border: "1px solid #ddd",
-  borderRadius: "4px",
-  position: "absolute",
-  top: "10px",
-  left: "10px",
-};
+import LocationInfo from "./LocationInfo";
 
 class MapComponent extends React.Component {
   constructor() {
@@ -17,15 +8,16 @@ class MapComponent extends React.Component {
     const self = this;
     this.map = null;
     this.marker = null;
+    this.info = null;
     this.geocoder = null;
     this.geolocation = null;
     this.mapEvents = {
       created(map) {
         self.map = map;
         const AMap = window.AMap;
-        AMap.plugin("AMap.Geocoder", () => {
-          self.geocoder = new AMap.Geocoder({ city: "全国" });
-        });
+        // AMap.plugin("AMap.Geocoder", () => {
+        //   self.geocoder = new AMap.Geocoder({ city: "全国" });
+        // });
         AMap.plugin("AMap.Geolocation", () => {
           self.geolocation = new AMap.Geolocation({
             // geolocation timeout, default: inf
@@ -41,13 +33,11 @@ class MapComponent extends React.Component {
           AMap.event.addListener(self.geolocation, "complete", onComplete);
           AMap.event.addListener(self.geolocation, "error", onError);
           function onComplete(data) {
-            console.log(data);
             self.setState({ markerVisible: true });
             self.updateLocation(data.position);
           }
 
           function onError(data) {
-            console.log(data);
             self.setState({ markerVisible: true });
           }
         });
@@ -66,7 +56,6 @@ class MapComponent extends React.Component {
     };
     this.state = {
       position: { longitude: 116.397264, latitude: 39.909146 },
-      currentLocation: "点击地图任意位置",
       markerVisible: false,
     };
     this.mapPlugins = ["ToolBar"];
@@ -76,30 +65,12 @@ class MapComponent extends React.Component {
     // Update position information
     this.setState({
       position: { longitude: lnglat.lng, latitude: lnglat.lat },
-      currentLocation: "Loading...",
     });
-
-    // Regeocode
-    this.geocoder &&
-      this.geocoder.getAddress(lnglat, (status, result) => {
-        console.log(result);
-        if (status === "complete") {
-          if (result.regeocode) {
-            this.setState({
-              currentLocation: result.regeocode.formattedAddress || "未知地点",
-            });
-          } else {
-            this.setState({
-              currentLocation: "未知地点",
-            });
-          }
-        } else {
-          this.setState({
-            currentLocation: "未知地点",
-          });
-        }
-      });
+    this.info && this.info.updateInfo();
   }
+  onRef = (ref) => {
+    this.info = ref;
+  };
   render() {
     return (
       <Map
@@ -114,13 +85,13 @@ class MapComponent extends React.Component {
           events={this.markerEvents}
           draggable
         />
-        <div className="location" style={layerStyle}>
-          <h3>{this.state.currentLocation}</h3>
-          经纬度:&nbsp;
-          <strong>
-            ({this.state.position.longitude},{this.state.position.latitude})
-          </strong>
-        </div>
+        <LocationInfo
+          className="location"
+          onRef={this.onRef}
+          geocoder={this.geocoder}
+          longitude={this.state.position.longitude}
+          latitude={this.state.position.latitude}
+        />
       </Map>
     );
   }
