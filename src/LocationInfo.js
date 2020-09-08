@@ -27,6 +27,33 @@ function sliderText(value) {
   }
 }
 
+function getTextColor(value, type) {
+  let color = null;
+  let thershold1 = {
+    "PM2.5": 35,
+    PM10: 70,
+    SO2: 60,
+    NO2: 40,
+    O3: 160,
+    CO: 4,
+  };
+  let thershold2 = {
+    "PM2.5": 75,
+    PM10: 150,
+    SO2: 150,
+    NO2: 80,
+    O3: 200,
+    CO: 10,
+  };
+  color =
+    value < thershold1[type]
+      ? "#5c5"
+      : value < thershold2[type]
+      ? "yellow"
+      : "red";
+  return { color: color };
+}
+
 class LocationInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -84,42 +111,84 @@ class LocationInfo extends React.Component {
               <p>
                 PM2.5
                 <br />
-                <span>{this.state.airQuality[this.state.slider]["PM2.5"]}</span>
+                <span
+                  style={getTextColor(
+                    this.state.airQuality[this.state.slider]["PM2.5"],
+                    "PM2.5"
+                  )}
+                >
+                  {this.state.airQuality[this.state.slider]["PM2.5"]}
+                </span>
               </p>
             </Grid>
             <Grid item xs={2}>
               <p>
                 PM10
                 <br />
-                <span>{this.state.airQuality[this.state.slider]["PM10"]}</span>
+                <span
+                  style={getTextColor(
+                    this.state.airQuality[this.state.slider]["PM10"],
+                    "PM10"
+                  )}
+                >
+                  {this.state.airQuality[this.state.slider]["PM10"]}
+                </span>
               </p>
             </Grid>
             <Grid item xs={2}>
               <p>
                 SO2
                 <br />
-                <span>{this.state.airQuality[this.state.slider]["SO2"]}</span>
+                <span
+                  style={getTextColor(
+                    this.state.airQuality[this.state.slider]["SO2"],
+                    "SO2"
+                  )}
+                >
+                  {this.state.airQuality[this.state.slider]["SO2"]}
+                </span>
               </p>
             </Grid>
             <Grid item xs={2}>
               <p>
                 NO2
                 <br />
-                <span>{this.state.airQuality[this.state.slider]["NO2"]}</span>
+                <span
+                  style={getTextColor(
+                    this.state.airQuality[this.state.slider]["NO2"],
+                    "NO2"
+                  )}
+                >
+                  {this.state.airQuality[this.state.slider]["NO2"]}
+                </span>
               </p>
             </Grid>
             <Grid item xs={2}>
               <p>
                 O3
                 <br />
-                <span>{this.state.airQuality[this.state.slider]["O3"]}</span>
+                <span
+                  style={getTextColor(
+                    this.state.airQuality[this.state.slider]["O3"],
+                    "O3"
+                  )}
+                >
+                  {this.state.airQuality[this.state.slider]["O3"]}
+                </span>
               </p>
             </Grid>
             <Grid item xs={2}>
               <p>
                 CO
                 <br />
-                <span>{this.state.airQuality[this.state.slider]["CO"]}</span>
+                <span
+                  style={getTextColor(
+                    this.state.airQuality[this.state.slider]["CO"],
+                    "CO"
+                  )}
+                >
+                  {this.state.airQuality[this.state.slider]["CO"]}
+                </span>
               </p>
             </Grid>
             <Grid item xs={12}>
