@@ -4,7 +4,7 @@
   "data": {
     "airQuality": [
       {
-        "AQI": 0,
+        "AQI": 1,
         "PM2.5": 11,
         "PM10": 71,
         "SO2": 151,

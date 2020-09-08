@@ -53,6 +53,43 @@ function getTextColor(value, type) {
       : "red";
   return { color: color };
 }
+function getTitleColor(value) {
+  let pieces = [
+    {
+      gt: 0,
+      lte: 50,
+      color: "#096",
+    },
+    {
+      gt: 50,
+      lte: 100,
+      color: "#ffde33",
+    },
+    {
+      gt: 100,
+      lte: 150,
+      color: "#ff9933",
+    },
+    {
+      gt: 150,
+      lte: 200,
+      color: "#cc0033",
+    },
+    {
+      gt: 200,
+      lte: 300,
+      color: "#660099",
+    },
+    {
+      gt: 300,
+      color: "#7e0023",
+    },
+  ];
+  for (let i = 0; i < pieces.length; i++) {
+    if (value > pieces[i].gt && (!pieces[i].lte || value <= pieces[i].lte))
+      return { backgroundColor: pieces[i].color };
+  }
+}
 
 class LocationInfo extends React.Component {
   constructor(props) {
@@ -99,7 +136,7 @@ class LocationInfo extends React.Component {
       <Card className="layer">
         <CardHeader
           title={this.state.currentLocation}
-          style={{ backgroundColor: "red" }}
+          style={getTitleColor(this.state.airQuality[this.state.slider]["AQI"])}
         />
         <CardContent>
           <p>
