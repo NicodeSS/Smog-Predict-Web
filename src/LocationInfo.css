@@ -1,0 +1,11 @@
+.layer {
+  position: absolute;
+  min-width: 400px;
+  top: 10px;
+  left: 10px;
+}
+
+.aqi_chart {
+  height: 250px;
+  width: 100%;
+}

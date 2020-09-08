@@ -2,13 +2,7 @@ import React from "react";
 import { Card, CardHeader, CardContent } from "@material-ui/core";
 import ReactEcharts from "echarts-for-react";
 import axios from "./plugins/axios";
-
-const layerStyle = {
-  position: "absolute",
-  minWidth: "400px",
-  top: "10px",
-  left: "10px",
-};
+import "./LocationInfo.css";
 
 class LocationInfo extends React.Component {
   constructor(props) {
@@ -26,19 +20,14 @@ class LocationInfo extends React.Component {
   }
   render() {
     return (
-      <Card style={layerStyle}>
+      <Card className="layer">
         <CardHeader
-          className="classes.header"
           title={this.state.currentLocation}
           style={{ "background-color": "red" }}
         />
         <CardContent>
           {this.state.lng},{this.state.lat}
-          <ReactEcharts
-            option={this.state.options}
-            style={{ height: "250px", width: "100%" }}
-            className="react_for_echarts"
-          />
+          <ReactEcharts option={this.state.options} className="aqi_chart" />
         </CardContent>
       </Card>
     );
