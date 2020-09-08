@@ -1,8 +1,31 @@
 import React from "react";
-import { Card, CardHeader, CardContent } from "@material-ui/core";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardMedia,
+  Grid,
+  Slider,
+} from "@material-ui/core";
 import ReactEcharts from "echarts-for-react";
 import axios from "./plugins/axios";
+import axiosOrig from "axios";
 import "./LocationInfo.css";
+
+function sliderText(value) {
+  switch (value) {
+    case 0:
+      return "现在";
+    case 1:
+      return "1h";
+    case 3:
+      return "3h";
+    case 12:
+      return "12h";
+    default:
+      return "未知";
+  }
+}
 
 class LocationInfo extends React.Component {
   constructor(props) {
@@ -12,7 +35,33 @@ class LocationInfo extends React.Component {
     AMap.plugin("AMap.Geocoder", () => {
       self.geocoder = new AMap.Geocoder({ city: "全国" });
     });
-    this.state = { currentLocation: "Test", lng: 0, lat: 0, options: {} };
+    this.state = {
+      currentLocation: "Test",
+      lng: 0,
+      lat: 0,
+      options: {},
+      airQuality: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+      slider: 0,
+    };
+    this.marks = [
+      {
+        value: 0,
+        label: "现在",
+      },
+      {
+        value: 1,
+        label: "1h",
+      },
+      {
+        value: 3,
+        label: "3h",
+      },
+      {
+        value: 12,
+        label: "12h",
+      },
+    ];
+    this.slider = 0;
   }
   componentDidMount() {
     this.props.onRef(this);
@@ -23,51 +72,94 @@ class LocationInfo extends React.Component {
       <Card className="layer">
         <CardHeader
           title={this.state.currentLocation}
-          style={{ "background-color": "red" }}
+          style={{ backgroundColor: "red" }}
         />
         <CardContent>
-          {this.state.lng},{this.state.lat}
-          <ReactEcharts option={this.state.options} className="aqi_chart" />
+          <p>
+            经纬度:{this.state.lng},{this.state.lat}
+          </p>
+          <p>AQI: {this.state.airQuality[this.state.slider]["AQI"]}</p>
+          <Grid container spacing={2} className="air_quality">
+            <Grid item xs={2}>
+              <p>
+                PM2.5
+                <br />
+                <span>{this.state.airQuality[this.state.slider]["PM2.5"]}</span>
+              </p>
+            </Grid>
+            <Grid item xs={2}>
+              <p>
+                PM10
+                <br />
+                <span>{this.state.airQuality[this.state.slider]["PM10"]}</span>
+              </p>
+            </Grid>
+            <Grid item xs={2}>
+              <p>
+                SO2
+                <br />
+                <span>{this.state.airQuality[this.state.slider]["SO2"]}</span>
+              </p>
+            </Grid>
+            <Grid item xs={2}>
+              <p>
+                NO2
+                <br />
+                <span>{this.state.airQuality[this.state.slider]["NO2"]}</span>
+              </p>
+            </Grid>
+            <Grid item xs={2}>
+              <p>
+                O3
+                <br />
+                <span>{this.state.airQuality[this.state.slider]["O3"]}</span>
+              </p>
+            </Grid>
+            <Grid item xs={2}>
+              <p>
+                CO
+                <br />
+                <span>{this.state.airQuality[this.state.slider]["CO"]}</span>
+              </p>
+            </Grid>
+            <Grid item xs={12}>
+              <Slider
+                defaultValue={0}
+                getAriaValueText={sliderText}
+                aria-labelledby="discrete-slider-restrict"
+                step={null}
+                min={0}
+                max={12}
+                marks={this.marks}
+                onChange={(e, v) => {
+                  this.setState({ slider: v });
+                }}
+              ></Slider>
+            </Grid>
+          </Grid>
         </CardContent>
+        <CardMedia>
+          <ReactEcharts option={this.state.options} className="aqi_chart" />
+        </CardMedia>
       </Card>
     );
   }
 
   async updateInfo() {
     let lnglat = [this.props.longitude, this.props.latitude];
-    this.getOptions();
-    console.log(lnglat, typeof lnglat);
-    this.geocoder &&
-      (await this.geocoder.getAddress(lnglat, (status, result) => {
-        console.log(result);
-        if (status === "complete") {
-          if (result.regeocode) {
-            this.setState({
-              currentLocation: result.regeocode.formattedAddress || "未知地点",
-              lng: lnglat[0],
-              lat: lnglat[1],
-            });
-          } else {
-            this.setState({
-              currentLocation: "未知地点",
-              lng: lnglat[0],
-              lat: lnglat[1],
-            });
-          }
-        } else {
-          this.setState({
-            currentLocation: "未知地点",
-            lng: lnglat[0],
-            lat: lnglat[1],
-          });
-        }
-      }));
+    let location = await this.getLocation(lnglat);
+    let airQuality = await this.getAirQuality(lnglat);
+    let options = await this.getOptions(lnglat);
+    let newState = {};
+    Object.assign(newState, location, airQuality, options);
+    console.log(newState);
+    this.setState(newState);
   }
-  async getOptions() {
+  async getOptions(lnglat) {
     try {
-      let result = await axios.get("test.json");
+      let result = await axios.get("test.json", { lnglat: lnglat });
       let data = result.data;
-      this.setState({
+      return {
         options: {
           backgroundColor: "#ccc3",
           textStyle: {
@@ -209,7 +301,55 @@ class LocationInfo extends React.Component {
             },
           ],
         },
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async getAirQuality(lnglat) {
+    try {
+      let result = await axios.get("air_quality.json", { lnglat: lnglat });
+      let data = result.data.data;
+      return data;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async getLocation(lnglat) {
+    try {
+      let result = await new Promise((resolve, reject) => {
+        axiosOrig({
+          method: "GET",
+          url: "https://restapi.amap.com/v3/geocode/regeo",
+          params: {
+            key: process.env.REACT_APP_AMAP_API_KEY,
+            s: "rsv3",
+            language: "zh-cn",
+            location: lnglat[0] + "," + lnglat[1],
+          },
+        })
+          .then(function (res) {
+            res.status === 200 && res.data.info === "OK"
+              ? resolve(res)
+              : reject(res);
+          })
+          .catch(function (err) {
+            reject(err);
+          });
       });
+      let data = result.data.regeocode
+        ? {
+            currentLocation:
+              result.data.regeocode.formatted_address || "未知地点",
+            lng: lnglat[0],
+            lat: lnglat[1],
+          }
+        : {
+            currentLocation: "未知地点",
+            lng: lnglat[0],
+            lat: lnglat[1],
+          };
+      return data;
     } catch (err) {
       console.log(err);
     }

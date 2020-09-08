@@ -9,3 +9,13 @@
   height: 250px;
   width: 100%;
 }
+
+.air_quality p span {
+  color: #5c5;
+  font-size: 2em;
+}
+
+.air_quality p {
+  color: #ccc;
+  font-size: 0.8em;
+}
