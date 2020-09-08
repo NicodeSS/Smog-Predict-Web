@@ -3,7 +3,7 @@ import axios from "axios";
 let http = axios.create({
   baseURL:
     process.env.NODE_ENV === "production"
-      ? "https://test.nicode.top:60005/"
+      ? "https://test.nicode.top:60006/"
       : "http://localhost:3000/",
   withCredentials: false,
   timeout: 10000,
