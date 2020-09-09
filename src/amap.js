@@ -43,7 +43,6 @@ class MapComponent extends React.Component {
         });
       },
       click(e) {
-        console.log(e);
         self.updateLocation(e.lnglat);
       },
     };

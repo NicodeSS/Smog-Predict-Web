@@ -312,7 +312,6 @@ class LocationInfo extends React.Component {
     let airQuality = await this.getAirQuality(lnglat);
     let newState = {};
     Object.assign(newState, location, airQuality);
-    console.log(newState);
     this.setState(newState);
   }
   async getAirQuality(lnglat) {
@@ -415,7 +414,7 @@ class LocationInfo extends React.Component {
       };
       return data;
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
   async getLocation(lnglat) {
@@ -454,7 +453,7 @@ class LocationInfo extends React.Component {
           };
       return data;
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 }
