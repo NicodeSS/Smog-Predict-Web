@@ -25,7 +25,7 @@ class MapComponent extends React.Component {
             //  adjust zoom when succeed, default: false
             zoomToAccuracy: true,
             showMarker: true,
-            showCircle: true,
+            showCircle: false,
           });
           // add control privilege to geolocation
           self.map.addControl(self.geolocation);
@@ -43,6 +43,7 @@ class MapComponent extends React.Component {
         });
       },
       click(e) {
+        console.log(e);
         self.updateLocation(e.lnglat);
       },
     };
