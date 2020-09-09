@@ -7,7 +7,10 @@ import {
   CardMedia,
   Grid,
   Slider,
+  IconButton,
+  Collapse,
 } from "@material-ui/core";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ReactEcharts from "echarts-for-react";
 import axios from "./plugins/axios";
 import axiosOrig from "axios";
@@ -151,7 +154,6 @@ function getSmogText(value) {
     }
   }
 }
-
 class LocationInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -167,6 +169,7 @@ class LocationInfo extends React.Component {
       options: {},
       airQuality: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
       slider: 0,
+      expanded: true,
     };
     this.marks = [
       {
@@ -187,10 +190,15 @@ class LocationInfo extends React.Component {
       },
     ];
     this.slider = 0;
+    this.handleExpandClick = this.handleExpandClick.bind(this);
   }
   componentDidMount() {
     this.props.onRef(this);
     this.updateInfo();
+  }
+  handleExpandClick() {
+    let cur = this.state.expanded;
+    this.setState({ expanded: !cur });
   }
   render() {
     const sections = ["PM2.5", "PM10", "SO2", "NO2", "O3", "CO"];
@@ -218,76 +226,87 @@ class LocationInfo extends React.Component {
             this.state.airQuality[this.state.slider]["AQI"],
             "background"
           )}
+          action={
+            <IconButton
+              onClick={this.handleExpandClick}
+              aria-expanded={this.state.expanded}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          }
         />
-        <CardContent>
-          <Container>
-            <Grid container spacing={1} className="air_quality">
-              <Grid item xs={4}>
-                <p>
-                  AQI
-                  <br />
-                  <span
-                    style={getAQIColor(
-                      this.state.airQuality[this.state.slider]["AQI"],
-                      "text"
-                    )}
-                  >
-                    {this.state.airQuality[this.state.slider]["AQI"]}
-                  </span>
-                </p>
-              </Grid>
-              <Grid item xs={4}>
-                <p>
-                  雾霾状况
-                  <br />
-                  <span
-                    style={getSmogColor(
-                      this.state.airQuality[this.state.slider]["PM2.5"]
-                    )}
-                  >
-                    {getSmogText(
-                      this.state.airQuality[this.state.slider]["PM2.5"]
-                    )}
-                  </span>
-                </p>
-              </Grid>
-              <Grid item xs={4}>
-                <p>
-                  预测误差
-                  <br />
-                  <span
-                    style={getAQIColor(
-                      this.state.airQuality[this.state.slider]["AQI"],
-                      "text"
-                    )}
-                  >
-                    {this.state.airQuality[this.state.slider]["error"]}%
-                  </span>
-                </p>
-              </Grid>
+        <Collapse in={this.state.expanded} timeout="auto">
+          <CardContent>
+            <Container>
+              <Grid container spacing={1} className="air_quality">
+                <Grid item xs={4}>
+                  <p>
+                    AQI
+                    <br />
+                    <span
+                      style={getAQIColor(
+                        this.state.airQuality[this.state.slider]["AQI"],
+                        "text"
+                      )}
+                    >
+                      {this.state.airQuality[this.state.slider]["AQI"]}
+                    </span>
+                  </p>
+                </Grid>
+                <Grid item xs={4}>
+                  <p>
+                    雾霾状况
+                    <br />
+                    <span
+                      style={getSmogColor(
+                        this.state.airQuality[this.state.slider]["PM2.5"]
+                      )}
+                    >
+                      {getSmogText(
+                        this.state.airQuality[this.state.slider]["PM2.5"]
+                      )}
+                    </span>
+                  </p>
+                </Grid>
+                <Grid item xs={4}>
+                  <p>
+                    预测误差
+                    <br />
+                    <span
+                      style={getAQIColor(
+                        this.state.airQuality[this.state.slider]["AQI"],
+                        "text"
+                      )}
+                    >
+                      {this.state.airQuality[this.state.slider]["error"]}%
+                    </span>
+                  </p>
+                </Grid>
 
-              {gridList}
+                {gridList}
 
-              <Grid item xs={12}>
-                <Slider
-                  defaultValue={0}
-                  getAriaValueText={sliderText}
-                  aria-labelledby="discrete-slider-restrict"
-                  step={null}
-                  min={0}
-                  max={12}
-                  marks={this.marks}
-                  onChange={(e, v) => {
-                    this.setState({ slider: v });
-                  }}
-                />
+                <Grid item xs={12}>
+                  <Slider
+                    defaultValue={0}
+                    getAriaValueText={sliderText}
+                    aria-labelledby="discrete-slider-restrict"
+                    step={null}
+                    min={0}
+                    max={12}
+                    marks={this.marks}
+                    onChange={(e, v) => {
+                      this.setState({ slider: v });
+                    }}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          </Container>
-        </CardContent>
-        <CardMedia>
-          <ReactEcharts option={this.state.options} className="aqi_chart" />
-        </CardMedia>
+            </Container>
+          </CardContent>
+          <CardMedia>
+            <ReactEcharts option={this.state.options} className="aqi_chart" />
+          </CardMedia>
+        </Collapse>
       </Card>
     );
   }
