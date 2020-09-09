@@ -315,115 +315,10 @@ class LocationInfo extends React.Component {
     let lnglat = [this.props.longitude, this.props.latitude];
     let location = await this.getLocation(lnglat);
     let airQuality = await this.getAirQuality(lnglat);
-    let options = await this.getOptions(lnglat);
     let newState = {};
-    Object.assign(newState, location, airQuality, options);
+    Object.assign(newState, location, airQuality);
     console.log(newState);
     this.setState(newState);
-  }
-  async getOptions(lnglat) {
-    try {
-      let result = await axios.get("test.json", {
-        longitude: lnglat.lng,
-        latitude: lnglat.lat,
-      });
-      let data = result.data;
-      return {
-        options: {
-          backgroundColor: "#ccc3",
-          textStyle: {
-            color: "#fff",
-          },
-          title: {
-            text: "PM2.5",
-            textStyle: {
-              color: "#fff",
-            },
-          },
-          tooltip: {
-            trigger: "axis",
-          },
-          xAxis: {
-            data: data.map(function (item) {
-              return item[0];
-            }),
-            axisLine: {
-              lineStyle: {
-                color: "#ccc",
-              },
-            },
-          },
-          yAxis: {
-            splitLine: {
-              show: false,
-            },
-            axisLine: {
-              lineStyle: {
-                color: "#ccc",
-              },
-            },
-          },
-          visualMap: {
-            top: 10,
-            right: 10,
-            show: false,
-            pieces: [
-              {
-                gt: 0,
-                lte: 150,
-                color: "#5c5",
-              },
-              {
-                gt: 150,
-                lte: 250,
-                color: "#ffde33",
-              },
-              {
-                gt: 250,
-                lte: 500,
-                color: "#ff9933",
-              },
-              {
-                gt: 500,
-                color: "#cc0033",
-              },
-            ],
-            outOfRange: {
-              color: "#999",
-            },
-          },
-          series: [
-            {
-              name: "历史数据",
-              type: "line",
-              showSymbol: false,
-              data: data.map(function (item, index) {
-                return index <= 24 ? item[1] : null;
-              }),
-            },
-            {
-              name: "预测数据",
-              type: "line",
-              showSymbol: false,
-              smooth: false,
-              itemStyle: {
-                normal: {
-                  lineStyle: {
-                    width: 3,
-                    type: "dotted", //'dotted'虚线 'solid'实线
-                  },
-                },
-              },
-              data: data.map(function (item, index) {
-                return index >= 24 ? item[1] : null;
-              }),
-            },
-          ],
-        },
-      };
-    } catch (err) {
-      console.log(err);
-    }
   }
   async getAirQuality(lnglat) {
     try {
@@ -432,6 +327,97 @@ class LocationInfo extends React.Component {
         latitude: lnglat.lat,
       });
       let data = result.data.data;
+      data.options = {
+        backgroundColor: "#ccc3",
+        textStyle: {
+          color: "#fff",
+        },
+        title: {
+          text: "PM2.5",
+          textStyle: {
+            color: "#fff",
+          },
+        },
+        tooltip: {
+          trigger: "axis",
+        },
+        xAxis: {
+          data: data["PM2.5"].map(function (item) {
+            return item[0];
+          }),
+          axisLine: {
+            lineStyle: {
+              color: "#ccc",
+            },
+          },
+        },
+        yAxis: {
+          splitLine: {
+            show: false,
+          },
+          axisLine: {
+            lineStyle: {
+              color: "#ccc",
+            },
+          },
+        },
+        visualMap: {
+          top: 10,
+          right: 10,
+          show: false,
+          pieces: [
+            {
+              gt: 0,
+              lte: 150,
+              color: "#5c5",
+            },
+            {
+              gt: 150,
+              lte: 250,
+              color: "#ffde33",
+            },
+            {
+              gt: 250,
+              lte: 500,
+              color: "#ff9933",
+            },
+            {
+              gt: 500,
+              color: "#cc0033",
+            },
+          ],
+          outOfRange: {
+            color: "#999",
+          },
+        },
+        series: [
+          {
+            name: "历史数据",
+            type: "line",
+            showSymbol: false,
+            data: data["PM2.5"].map(function (item, index) {
+              return index <= 24 ? item[1] : null;
+            }),
+          },
+          {
+            name: "预测数据",
+            type: "line",
+            showSymbol: false,
+            smooth: false,
+            itemStyle: {
+              normal: {
+                lineStyle: {
+                  width: 3,
+                  type: "dotted", //'dotted'虚线 'solid'实线
+                },
+              },
+            },
+            data: data["PM2.5"].map(function (item, index) {
+              return index >= 24 ? item[1] : null;
+            }),
+          },
+        ],
+      };
       return data;
     } catch (err) {
       console.log(err);
