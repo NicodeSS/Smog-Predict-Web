@@ -317,8 +317,8 @@ class LocationInfo extends React.Component {
   async getAirQuality(lnglat) {
     try {
       let result = await axios.get("/predict", {
-        longitude: lnglat.lng,
-        latitude: lnglat.lat,
+        longitude: lnglat[0],
+        latitude: lnglat[1],
       });
       let data = result.data.data;
       data.options = {
