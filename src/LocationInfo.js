@@ -16,21 +16,6 @@ import axios from "./plugins/axios";
 import axiosOrig from "axios";
 import "./LocationInfo.css";
 
-function sliderText(value) {
-  switch (value) {
-    case 0:
-      return "现在";
-    case 1:
-      return "1h";
-    case 3:
-      return "3h";
-    case 12:
-      return "12h";
-    default:
-      return "未知";
-  }
-}
-
 function getTextColor(value, type) {
   let color = null;
   let thershold1 = {
@@ -176,14 +161,17 @@ class LocationInfo extends React.Component {
         value: 0,
         label: "现在",
       },
-      {
-        value: 1,
-        label: "1h",
-      },
-      {
-        value: 3,
-        label: "3h",
-      },
+      { value: 1 },
+      { value: 2 },
+      { value: 3 },
+      { value: 4 },
+      { value: 5 },
+      { value: 6 },
+      { value: 7 },
+      { value: 8 },
+      { value: 9 },
+      { value: 10 },
+      { value: 11 },
       {
         value: 12,
         label: "12h",
@@ -288,10 +276,12 @@ class LocationInfo extends React.Component {
 
                 <Grid item xs={12}>
                   <Slider
+                    color="primary"
                     defaultValue={0}
-                    getAriaValueText={sliderText}
-                    aria-labelledby="discrete-slider-restrict"
-                    step={null}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(v) => (v ? v + "h" : "现在")}
+                    aria-labelledby="discrete-slider"
+                    step={1}
                     min={0}
                     max={12}
                     marks={this.marks}

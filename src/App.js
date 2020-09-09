@@ -7,6 +7,9 @@ import MapComponent from "./amap";
 const darkTheme = createMuiTheme({
   palette: {
     type: "dark",
+    primary: {
+      main: "#5c5",
+    },
   },
 });
 
