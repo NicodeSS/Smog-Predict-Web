@@ -323,7 +323,10 @@ class LocationInfo extends React.Component {
   }
   async getOptions(lnglat) {
     try {
-      let result = await axios.get("test.json", { lnglat: lnglat });
+      let result = await axios.get("test.json", {
+        longitude: lnglat.lng,
+        latitude: lnglat.lat,
+      });
       let data = result.data;
       return {
         options: {
@@ -424,7 +427,10 @@ class LocationInfo extends React.Component {
   }
   async getAirQuality(lnglat) {
     try {
-      let result = await axios.get("air_quality.json", { lnglat: lnglat });
+      let result = await axios.get("/predict", {
+        longitude: lnglat.lng,
+        latitude: lnglat.lat,
+      });
       let data = result.data.data;
       return data;
     } catch (err) {
