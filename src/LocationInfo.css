@@ -16,6 +16,13 @@
   }
 }
 
+.card-title {
+  transition: background-color 0.5s ease-in;
+}
+.card-text {
+  transition: color 0.5s ease-in;
+}
+
 .pm2_5_chart {
   height: 250px !important;
   width: 100%;

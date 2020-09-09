@@ -196,6 +196,7 @@ class LocationInfo extends React.Component {
           {index}
           <br />
           <span
+            className="card-text"
             style={getTextColor(
               this.state.airQuality[this.state.slider][index],
               index
@@ -210,6 +211,7 @@ class LocationInfo extends React.Component {
       <Card className="layer">
         <CardHeader
           title={this.state.currentLocation}
+          className="card-title"
           style={getAQIColor(
             this.state.airQuality[this.state.slider]["AQI"],
             "background"
@@ -233,6 +235,7 @@ class LocationInfo extends React.Component {
                     AQI
                     <br />
                     <span
+                      className="card-text"
                       style={getAQIColor(
                         this.state.airQuality[this.state.slider]["AQI"],
                         "text"
@@ -247,6 +250,7 @@ class LocationInfo extends React.Component {
                     雾霾状况
                     <br />
                     <span
+                      className="card-text"
                       style={getSmogColor(
                         this.state.airQuality[this.state.slider]["PM2.5"]
                       )}
@@ -262,6 +266,7 @@ class LocationInfo extends React.Component {
                     预测误差
                     <br />
                     <span
+                      className="card-text"
                       style={getAQIColor(
                         this.state.airQuality[this.state.slider]["AQI"],
                         "text"
