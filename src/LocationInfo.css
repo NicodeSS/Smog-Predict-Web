@@ -16,8 +16,8 @@
   }
 }
 
-.aqi_chart {
-  height: 250px;
+.pm2_5_chart {
+  height: 250px !important;
   width: 100%;
 }
 

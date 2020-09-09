@@ -294,7 +294,7 @@ class LocationInfo extends React.Component {
             </Container>
           </CardContent>
           <CardMedia>
-            <ReactEcharts option={this.state.options} className="aqi_chart" />
+            <ReactEcharts option={this.state.options} className="pm2_5_chart" />
           </CardMedia>
         </Collapse>
       </Card>
