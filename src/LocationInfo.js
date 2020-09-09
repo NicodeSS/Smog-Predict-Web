@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Container,
   Card,
   CardHeader,
   CardContent,
@@ -53,12 +54,13 @@ function getTextColor(value, type) {
       : "red";
   return { color: color };
 }
-function getTitleColor(value) {
+function getAQIColor(value, type) {
+  let pos = type === "background" ? "backgroundColor" : "color";
   let pieces = [
     {
       gt: 0,
       lte: 50,
-      color: "#096",
+      color: "#5c5",
     },
     {
       gt: 50,
@@ -85,9 +87,68 @@ function getTitleColor(value) {
       color: "#7e0023",
     },
   ];
+  let res = {};
   for (let i = 0; i < pieces.length; i++) {
-    if (value > pieces[i].gt && (!pieces[i].lte || value <= pieces[i].lte))
-      return { backgroundColor: pieces[i].color };
+    if (value > pieces[i].gt && (!pieces[i].lte || value <= pieces[i].lte)) {
+      res[pos] = pieces[i].color;
+      return res;
+    }
+  }
+}
+function getSmogColor(value) {
+  let pieces = [
+    {
+      gt: 0,
+      lte: 150,
+      color: "#5c5",
+    },
+    {
+      gt: 150,
+      lte: 250,
+      color: "#ffde33",
+    },
+    {
+      gt: 250,
+      lte: 500,
+      color: "#ff9933",
+    },
+    {
+      gt: 500,
+      color: "#cc0033",
+    },
+  ];
+  for (let i = 0; i < pieces.length; i++) {
+    if (value > pieces[i].gt && (!pieces[i].lte || value <= pieces[i].lte)) {
+      return { color: pieces[i].color };
+    }
+  }
+}
+function getSmogText(value) {
+  let pieces = [
+    {
+      gt: 0,
+      lte: 150,
+      text: "无",
+    },
+    {
+      gt: 150,
+      lte: 250,
+      text: "中度",
+    },
+    {
+      gt: 250,
+      lte: 500,
+      text: "重度",
+    },
+    {
+      gt: 500,
+      text: "极重",
+    },
+  ];
+  for (let i = 0; i < pieces.length; i++) {
+    if (value > pieces[i].gt && (!pieces[i].lte || value <= pieces[i].lte)) {
+      return pieces[i].text;
+    }
   }
 }
 
@@ -136,113 +197,157 @@ class LocationInfo extends React.Component {
       <Card className="layer">
         <CardHeader
           title={this.state.currentLocation}
-          style={getTitleColor(this.state.airQuality[this.state.slider]["AQI"])}
+          style={getAQIColor(
+            this.state.airQuality[this.state.slider]["AQI"],
+            "background"
+          )}
         />
         <CardContent>
-          <p>
-            经纬度:{this.state.lng},{this.state.lat}
-          </p>
-          <p>AQI: {this.state.airQuality[this.state.slider]["AQI"]}</p>
-          <Grid container spacing={2} className="air_quality">
-            <Grid item xs={2}>
-              <p>
-                PM2.5
-                <br />
-                <span
-                  style={getTextColor(
-                    this.state.airQuality[this.state.slider]["PM2.5"],
-                    "PM2.5"
-                  )}
-                >
-                  {this.state.airQuality[this.state.slider]["PM2.5"]}
-                </span>
-              </p>
+          <Container>
+            <Grid container spacing={1} className="air_quality">
+              <Grid item xs={4}>
+                <p>
+                  AQI
+                  <br />
+                  <span
+                    style={getAQIColor(
+                      this.state.airQuality[this.state.slider]["AQI"],
+                      "text"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["AQI"]}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={4}>
+                <p>
+                  雾霾状况
+                  <br />
+                  <span
+                    style={getSmogColor(
+                      this.state.airQuality[this.state.slider]["PM2.5"]
+                    )}
+                  >
+                    {getSmogText(
+                      this.state.airQuality[this.state.slider]["PM2.5"]
+                    )}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={4}>
+                <p>
+                  误差
+                  <br />
+                  <span
+                    style={getAQIColor(
+                      this.state.airQuality[this.state.slider]["AQI"],
+                      "text"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["error"]}%
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={2}>
+                <p>
+                  PM2.5
+                  <br />
+                  <span
+                    style={getTextColor(
+                      this.state.airQuality[this.state.slider]["PM2.5"],
+                      "PM2.5"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["PM2.5"]}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={2}>
+                <p>
+                  PM10
+                  <br />
+                  <span
+                    style={getTextColor(
+                      this.state.airQuality[this.state.slider]["PM10"],
+                      "PM10"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["PM10"]}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={2}>
+                <p>
+                  SO2
+                  <br />
+                  <span
+                    style={getTextColor(
+                      this.state.airQuality[this.state.slider]["SO2"],
+                      "SO2"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["SO2"]}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={2}>
+                <p>
+                  NO2
+                  <br />
+                  <span
+                    style={getTextColor(
+                      this.state.airQuality[this.state.slider]["NO2"],
+                      "NO2"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["NO2"]}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={2}>
+                <p>
+                  O3
+                  <br />
+                  <span
+                    style={getTextColor(
+                      this.state.airQuality[this.state.slider]["O3"],
+                      "O3"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["O3"]}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={2}>
+                <p>
+                  CO
+                  <br />
+                  <span
+                    style={getTextColor(
+                      this.state.airQuality[this.state.slider]["CO"],
+                      "CO"
+                    )}
+                  >
+                    {this.state.airQuality[this.state.slider]["CO"]}
+                  </span>
+                </p>
+              </Grid>
+              <Grid item xs={12}>
+                <Slider
+                  defaultValue={0}
+                  getAriaValueText={sliderText}
+                  aria-labelledby="discrete-slider-restrict"
+                  step={null}
+                  min={0}
+                  max={12}
+                  marks={this.marks}
+                  onChange={(e, v) => {
+                    this.setState({ slider: v });
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={2}>
-              <p>
-                PM10
-                <br />
-                <span
-                  style={getTextColor(
-                    this.state.airQuality[this.state.slider]["PM10"],
-                    "PM10"
-                  )}
-                >
-                  {this.state.airQuality[this.state.slider]["PM10"]}
-                </span>
-              </p>
-            </Grid>
-            <Grid item xs={2}>
-              <p>
-                SO2
-                <br />
-                <span
-                  style={getTextColor(
-                    this.state.airQuality[this.state.slider]["SO2"],
-                    "SO2"
-                  )}
-                >
-                  {this.state.airQuality[this.state.slider]["SO2"]}
-                </span>
-              </p>
-            </Grid>
-            <Grid item xs={2}>
-              <p>
-                NO2
-                <br />
-                <span
-                  style={getTextColor(
-                    this.state.airQuality[this.state.slider]["NO2"],
-                    "NO2"
-                  )}
-                >
-                  {this.state.airQuality[this.state.slider]["NO2"]}
-                </span>
-              </p>
-            </Grid>
-            <Grid item xs={2}>
-              <p>
-                O3
-                <br />
-                <span
-                  style={getTextColor(
-                    this.state.airQuality[this.state.slider]["O3"],
-                    "O3"
-                  )}
-                >
-                  {this.state.airQuality[this.state.slider]["O3"]}
-                </span>
-              </p>
-            </Grid>
-            <Grid item xs={2}>
-              <p>
-                CO
-                <br />
-                <span
-                  style={getTextColor(
-                    this.state.airQuality[this.state.slider]["CO"],
-                    "CO"
-                  )}
-                >
-                  {this.state.airQuality[this.state.slider]["CO"]}
-                </span>
-              </p>
-            </Grid>
-            <Grid item xs={12}>
-              <Slider
-                defaultValue={0}
-                getAriaValueText={sliderText}
-                aria-labelledby="discrete-slider-restrict"
-                step={null}
-                min={0}
-                max={12}
-                marks={this.marks}
-                onChange={(e, v) => {
-                  this.setState({ slider: v });
-                }}
-              ></Slider>
-            </Grid>
-          </Grid>
+          </Container>
         </CardContent>
         <CardMedia>
           <ReactEcharts option={this.state.options} className="aqi_chart" />
@@ -272,7 +377,7 @@ class LocationInfo extends React.Component {
             color: "#fff",
           },
           title: {
-            text: "Beijing AQI",
+            text: "PM2.5",
             textStyle: {
               color: "#fff",
             },
@@ -307,32 +412,22 @@ class LocationInfo extends React.Component {
             pieces: [
               {
                 gt: 0,
-                lte: 50,
-                color: "#096",
-              },
-              {
-                gt: 50,
-                lte: 100,
-                color: "#ffde33",
-              },
-              {
-                gt: 100,
                 lte: 150,
-                color: "#ff9933",
+                color: "#5c5",
               },
               {
                 gt: 150,
-                lte: 200,
+                lte: 250,
+                color: "#ffde33",
+              },
+              {
+                gt: 250,
+                lte: 500,
+                color: "#ff9933",
+              },
+              {
+                gt: 500,
                 color: "#cc0033",
-              },
-              {
-                gt: 200,
-                lte: 300,
-                color: "#660099",
-              },
-              {
-                gt: 300,
-                color: "#7e0023",
               },
             ],
             outOfRange: {
@@ -347,26 +442,6 @@ class LocationInfo extends React.Component {
               data: data.map(function (item, index) {
                 return index <= 24 ? item[1] : null;
               }),
-              markLine: {
-                silent: true,
-                data: [
-                  {
-                    yAxis: 50,
-                  },
-                  {
-                    yAxis: 100,
-                  },
-                  {
-                    yAxis: 150,
-                  },
-                  {
-                    yAxis: 200,
-                  },
-                  {
-                    yAxis: 300,
-                  },
-                ],
-              },
             },
             {
               name: "预测数据",
@@ -384,26 +459,6 @@ class LocationInfo extends React.Component {
               data: data.map(function (item, index) {
                 return index >= 24 ? item[1] : null;
               }),
-              markLine: {
-                silent: true,
-                data: [
-                  {
-                    yAxis: 50,
-                  },
-                  {
-                    yAxis: 100,
-                  },
-                  {
-                    yAxis: 150,
-                  },
-                  {
-                    yAxis: 200,
-                  },
-                  {
-                    yAxis: 300,
-                  },
-                ],
-              },
             },
           ],
         },
