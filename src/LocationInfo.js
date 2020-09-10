@@ -15,9 +15,6 @@ import {
   Grid,
   IconButton,
   Slider,
-  TableHead,
-  TableBody,
-  TableRow,
   Paper,
   TableCell,
 } from "@material-ui/core";
@@ -171,12 +168,12 @@ class MuiVirtualizedTable extends React.PureComponent {
     rowHeight: 35,
   };
 
-  cellRenderer = ({ cellData, columnIndex }) => {
+  cellRenderer = ({ cellData }) => {
     const { rowHeight } = this.props;
     return (
       <TableCell
         variant="body"
-        className="flex table-cell"
+        className="table-cell"
         style={{ height: rowHeight }}
         align="center"
       >
@@ -185,12 +182,12 @@ class MuiVirtualizedTable extends React.PureComponent {
     );
   };
 
-  headerRenderer = ({ dataKey, label, columnIndex }) => {
-    const { headerHeight, columns } = this.props;
+  headerRenderer = ({ dataKey, label }) => {
+    const { headerHeight } = this.props;
     return (
       <TableCell
         key={dataKey}
-        className="flex table-cell"
+        className="table-cell"
         variant="head"
         style={{ height: headerHeight }}
         align="center"
@@ -221,7 +218,6 @@ class MuiVirtualizedTable extends React.PureComponent {
               return (
                 <Column
                   key={dataKey}
-                  className="flex"
                   headerRenderer={(headerProps) =>
                     this.headerRenderer({
                       ...headerProps,
@@ -328,11 +324,13 @@ class LocationInfo extends React.Component {
       >
         <DialogTitle id="form-dialog-title">全国AQI排名</DialogTitle>
         <DialogContent>
-          <MuiVirtualizedTable
-            rowCount={this.state.station.length}
-            rowGetter={({ index }) => this.state.station[index]}
-            columns={headCells}
-          />
+          <div className="table-paper">
+            <MuiVirtualizedTable
+              rowCount={this.state.station.length}
+              rowGetter={({ index }) => this.state.station[index]}
+              columns={headCells}
+            />
+          </div>
         </DialogContent>
         <DialogActions>
           <Button size="small" color="primary" onClick={this.handleDialogClick}>
