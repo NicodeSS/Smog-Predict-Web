@@ -89,11 +89,11 @@ function getAQIColor(value, type) {
     {
       gt: 200,
       lte: 300,
-      color: "#660099",
+      color: "#9500eb",
     },
     {
       gt: 300,
-      color: "#7e0023",
+      color: "#8a0026",
     },
   ];
   let res = {};
