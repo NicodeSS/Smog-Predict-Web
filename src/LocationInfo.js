@@ -15,9 +15,11 @@ import {
   Grid,
   IconButton,
   Slider,
+  Snackbar,
   TableCell,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MuiAlert from "@material-ui/lab/Alert";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import ReactEcharts from "echarts-for-react";
 import axios from "./plugins/axios";
@@ -254,6 +256,8 @@ class LocationInfo extends React.Component {
       expanded: true,
       dialog: false,
       station: [],
+      snackbar: false,
+      errMsg: "",
     };
     this.marks = [
       {
@@ -281,6 +285,7 @@ class LocationInfo extends React.Component {
     this.handleExpandClick = this.handleExpandClick.bind(this);
     this.handleDialogClick = this.handleDialogClick.bind(this);
     this.handleTestClick = this.handleTestClick.bind(this);
+    this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
   }
   componentDidMount() {
     this.props.onRef(this);
@@ -295,6 +300,10 @@ class LocationInfo extends React.Component {
   }
   handleTestClick() {
     this.updateInfo({ isTest: true });
+  }
+  handleSnackbarClose(event, reason) {
+    if (reason === "clickaway") return;
+    this.setState({ snackbar: !this.state.snackbar });
   }
   render() {
     const sections = ["PM2.5", "PM10", "SO2", "NO2", "O3", "CO"];
@@ -338,6 +347,22 @@ class LocationInfo extends React.Component {
           </Button>
         </DialogActions>
       </Dialog>
+    );
+    const errSnackbar = (
+      <Snackbar
+        open={this.state.snackbar}
+        autoHideDuration={5000}
+        onClose={this.handleSnackbarClose}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={this.handleSnackbarClose}
+          severity="error"
+        >
+          {this.state.errMsg}
+        </MuiAlert>
+      </Snackbar>
     );
     return (
       <Card className="layer">
@@ -451,6 +476,7 @@ class LocationInfo extends React.Component {
           </CardActions>
         </Collapse>
         {aqiDialog}
+        {errSnackbar}
       </Card>
     );
   }
@@ -565,6 +591,7 @@ class LocationInfo extends React.Component {
       };
       return data;
     } catch (err) {
+      this.setState({ errMsg: "获取PM2.5图表信息失败", snackbar: true });
       console.error(err);
     }
   }
@@ -604,6 +631,7 @@ class LocationInfo extends React.Component {
           };
       return data;
     } catch (err) {
+      this.setState({ errMsg: "高德地图逆地理编码失败", snackbar: true });
       console.error(err);
     }
   }
@@ -613,6 +641,7 @@ class LocationInfo extends React.Component {
       let data = result.data.data;
       this.setState(data);
     } catch (error) {
+      this.setState({ errMsg: "获取全国气象站AQI失败", snackbar: true });
       console.error(error);
     }
   }

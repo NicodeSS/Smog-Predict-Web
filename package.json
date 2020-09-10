@@ -35,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "react-virtualized": "^9.22.2"
   }
 }
