@@ -22,7 +22,7 @@ import { AutoSizer, Column, Table } from "react-virtualized";
 import ReactEcharts from "echarts-for-react";
 import axios from "./plugins/axios";
 import axiosOrig from "axios";
-import "./LocationInfo.css";
+import "./style/LocationInfo.css";
 import "react-virtualized/styles.css";
 
 let headCells = [

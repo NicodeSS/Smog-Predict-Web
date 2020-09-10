@@ -1,6 +1,6 @@
 import React from "react";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import "./App.css";
+import "./style/App.css";
 
 import MapComponent from "./amap";
 
