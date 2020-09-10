@@ -277,6 +277,7 @@ class LocationInfo extends React.Component {
       },
     ];
     this.slider = 0;
+    this.error = [0, 12, 30, 22, 34, 22, 25, 28, 29, 29, 45, 34, 24];
     this.handleExpandClick = this.handleExpandClick.bind(this);
     this.handleDialogClick = this.handleDialogClick.bind(this);
   }
@@ -399,7 +400,7 @@ class LocationInfo extends React.Component {
                         "text"
                       )}
                     >
-                      {this.state.airQuality[this.state.slider]["error"]}%
+                      {this.error[this.state.slider]}%
                     </span>
                   </p>
                 </Grid>
