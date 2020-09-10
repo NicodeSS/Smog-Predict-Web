@@ -15,29 +15,31 @@ import {
   Grid,
   IconButton,
   Slider,
-  Table,
   TableHead,
   TableBody,
   TableRow,
+  Paper,
   TableCell,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { AutoSizer, Column, Table } from "react-virtualized";
 import ReactEcharts from "echarts-for-react";
 import axios from "./plugins/axios";
 import axiosOrig from "axios";
 import "./LocationInfo.css";
+import "react-virtualized/styles.css";
 
 let headCells = [
-  { id: "province", label: "省份" },
-  { id: "city", label: "城市" },
-  { id: "station", label: "站点" },
-  { id: "aqi", label: "AQI" },
-  { id: "pm2_5", label: "PM2.5" },
-  { id: "pm10", label: "PM10" },
-  { id: "so2", label: "SO2" },
-  { id: "no2", label: "NO2" },
-  { id: "o3", label: "O3" },
-  { id: "co", label: "CO" },
+  { width: 160, dataKey: "province", label: "省份" },
+  { width: 120, dataKey: "city", label: "城市" },
+  { width: 160, dataKey: "station", label: "站点" },
+  { width: 45, dataKey: "aqi", label: "AQI" },
+  { width: 45, dataKey: "pm2_5", label: "PM2.5" },
+  { width: 45, dataKey: "pm10", label: "PM10" },
+  { width: 45, dataKey: "so2", label: "SO2" },
+  { width: 45, dataKey: "no2", label: "NO2" },
+  { width: 45, dataKey: "o3", label: "O3" },
+  { width: 45, dataKey: "co", label: "CO" },
 ];
 function getTextColor(value, type) {
   let color = null;
@@ -163,6 +165,82 @@ function getSmogText(value) {
   }
 }
 
+class MuiVirtualizedTable extends React.PureComponent {
+  static defaultProps = {
+    headerHeight: 45,
+    rowHeight: 35,
+  };
+
+  cellRenderer = ({ cellData, columnIndex }) => {
+    const { rowHeight } = this.props;
+    return (
+      <TableCell
+        variant="body"
+        className="flex table-cell"
+        style={{ height: rowHeight }}
+        align="center"
+      >
+        {cellData}
+      </TableCell>
+    );
+  };
+
+  headerRenderer = ({ dataKey, label, columnIndex }) => {
+    const { headerHeight, columns } = this.props;
+    return (
+      <TableCell
+        key={dataKey}
+        className="flex table-cell"
+        variant="head"
+        style={{ height: headerHeight }}
+        align="center"
+      >
+        {label}
+      </TableCell>
+    );
+  };
+
+  render() {
+    const { columns, rowHeight, headerHeight, ...tableProps } = this.props;
+    return (
+      <AutoSizer>
+        {({ height, width }) => (
+          <Table
+            stickyHeader
+            size="small"
+            height={height}
+            width={width}
+            rowHeight={rowHeight}
+            gridStyle={{
+              direction: "inherit",
+            }}
+            headerHeight={headerHeight}
+            {...tableProps}
+          >
+            {columns.map(({ dataKey, ...other }, index) => {
+              return (
+                <Column
+                  key={dataKey}
+                  className="flex"
+                  headerRenderer={(headerProps) =>
+                    this.headerRenderer({
+                      ...headerProps,
+                      columnIndex: index,
+                    })
+                  }
+                  cellRenderer={this.cellRenderer}
+                  dataKey={dataKey}
+                  {...other}
+                />
+              );
+            })}
+          </Table>
+        )}
+      </AutoSizer>
+    );
+  }
+}
+
 class LocationInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -242,7 +320,7 @@ class LocationInfo extends React.Component {
     ));
     const aqiDialog = (
       <Dialog
-        maxWidth="xl"
+        fullScreen
         className="aqi-dialog"
         open={this.state.dialog}
         onClose={this.handleDialogClick}
@@ -250,77 +328,11 @@ class LocationInfo extends React.Component {
       >
         <DialogTitle id="form-dialog-title">全国AQI排名</DialogTitle>
         <DialogContent>
-          <div>
-            <Table
-              stickyHeader
-              aria-labelledby="tableTitle"
-              size="small"
-              aria-label="enhanced table"
-            >
-              <TableHead>
-                <TableRow>
-                  {headCells.map((headCell) => (
-                    <TableCell
-                      key={headCell.id}
-                      align="center"
-                      padding={headCell.disablePadding ? "none" : "none"}
-                    >
-                      {headCell.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state.station.map((row, index) => {
-                  const labelId = `enhanced-table-${index}`;
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.station_code}
-                    >
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.province}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.city}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.station}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.aqi}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.pm2_5}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.pm10}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.so2}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.no2}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.o3}
-                      </TableCell>
-                      <TableCell align="center" className="cell-center">
-                        {row.co}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+          <MuiVirtualizedTable
+            rowCount={this.state.station.length}
+            rowGetter={({ index }) => this.state.station[index]}
+            columns={headCells}
+          />
         </DialogContent>
         <DialogActions>
           <Button size="small" color="primary" onClick={this.handleDialogClick}>
