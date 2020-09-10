@@ -280,10 +280,11 @@ class LocationInfo extends React.Component {
     this.error = [0, 12, 30, 22, 34, 22, 25, 28, 29, 29, 45, 34, 24];
     this.handleExpandClick = this.handleExpandClick.bind(this);
     this.handleDialogClick = this.handleDialogClick.bind(this);
+    this.handleTestClick = this.handleTestClick.bind(this);
   }
   componentDidMount() {
     this.props.onRef(this);
-    this.updateInfo();
+    this.updateInfo({});
     this.getStationAqi();
   }
   handleExpandClick() {
@@ -291,6 +292,9 @@ class LocationInfo extends React.Component {
   }
   handleDialogClick() {
     this.setState({ dialog: !this.state.dialog });
+  }
+  handleTestClick() {
+    this.updateInfo({ isTest: true });
   }
   render() {
     const sections = ["PM2.5", "PM10", "SO2", "NO2", "O3", "CO"];
@@ -437,6 +441,13 @@ class LocationInfo extends React.Component {
             >
               查看全国AQI排名
             </Button>
+            <Button
+              size="small"
+              color="secondary"
+              onClick={this.handleTestClick}
+            >
+              加载测试数据
+            </Button>
           </CardActions>
         </Collapse>
         {aqiDialog}
@@ -444,17 +455,19 @@ class LocationInfo extends React.Component {
     );
   }
 
-  async updateInfo() {
+  async updateInfo(settings) {
     let lnglat = [this.props.longitude, this.props.latitude];
     let location = await this.getLocation(lnglat);
-    let airQuality = await this.getAirQuality(lnglat);
+    let airQuality = await this.getAirQuality(lnglat, settings);
     let newState = {};
     Object.assign(newState, location, airQuality);
     this.setState(newState);
   }
-  async getAirQuality(lnglat) {
+  async getAirQuality(lnglat, settings) {
     try {
-      let result = await axios.get("/predict", {
+      const { isTest } = settings;
+      let url = !isTest ? "/predict" : "/predict_test";
+      let result = await axios.get(url, {
         longitude: lnglat[0],
         latitude: lnglat[1],
       });

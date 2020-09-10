@@ -66,7 +66,7 @@ class MapComponent extends React.Component {
     this.setState({
       position: { longitude: lnglat.lng, latitude: lnglat.lat },
     });
-    this.info && this.info.updateInfo();
+    this.info && this.info.updateInfo({});
   }
   onRef = (ref) => {
     this.info = ref;
