@@ -1,14 +1,25 @@
 import React from "react";
 import {
-  Container,
+  Button,
   Card,
   CardHeader,
   CardContent,
   CardMedia,
-  Grid,
-  Slider,
-  IconButton,
+  CardActions,
+  Container,
   Collapse,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  IconButton,
+  Slider,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ReactEcharts from "echarts-for-react";
@@ -16,6 +27,18 @@ import axios from "./plugins/axios";
 import axiosOrig from "axios";
 import "./LocationInfo.css";
 
+let headCells = [
+  { id: "province", label: "省份" },
+  { id: "city", label: "城市" },
+  { id: "station", label: "站点" },
+  { id: "aqi", label: "AQI" },
+  { id: "pm2_5", label: "PM2.5" },
+  { id: "pm10", label: "PM10" },
+  { id: "so2", label: "SO2" },
+  { id: "no2", label: "NO2" },
+  { id: "o3", label: "O3" },
+  { id: "co", label: "CO" },
+];
 function getTextColor(value, type) {
   let color = null;
   let thershold1 = {
@@ -139,6 +162,7 @@ function getSmogText(value) {
     }
   }
 }
+
 class LocationInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -155,6 +179,10 @@ class LocationInfo extends React.Component {
       airQuality: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
       slider: 0,
       expanded: true,
+      dialog: false,
+      station: [],
+      order: "desc",
+      orderBy: "aqi",
     };
     this.marks = [
       {
@@ -179,14 +207,19 @@ class LocationInfo extends React.Component {
     ];
     this.slider = 0;
     this.handleExpandClick = this.handleExpandClick.bind(this);
+    this.handleDialogClick = this.handleDialogClick.bind(this);
   }
   componentDidMount() {
     this.props.onRef(this);
     this.updateInfo();
+    this.getStationAqi();
   }
   handleExpandClick() {
     let cur = this.state.expanded;
     this.setState({ expanded: !cur });
+  }
+  handleDialogClick() {
+    this.setState({ dialog: !this.state.dialog });
   }
   render() {
     const sections = ["PM2.5", "PM10", "SO2", "NO2", "O3", "CO"];
@@ -207,6 +240,95 @@ class LocationInfo extends React.Component {
         </p>
       </Grid>
     ));
+    const aqiDialog = (
+      <Dialog
+        maxWidth="xl"
+        className="aqi-dialog"
+        open={this.state.dialog}
+        onClose={this.handleDialogClick}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">全国AQI排名</DialogTitle>
+        <DialogContent>
+          <div>
+            <Table
+              stickyHeader
+              aria-labelledby="tableTitle"
+              size="small"
+              aria-label="enhanced table"
+            >
+              <TableHead>
+                <TableRow>
+                  {headCells.map((headCell) => (
+                    <TableCell
+                      key={headCell.id}
+                      align="center"
+                      padding={headCell.disablePadding ? "none" : "none"}
+                    >
+                      {headCell.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {this.state.station.map((row, index) => {
+                  const labelId = `enhanced-table-${index}`;
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.station_code}
+                    >
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                      >
+                        {row.province}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.city}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.station}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.aqi}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.pm2_5}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.pm10}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.so2}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.no2}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.o3}
+                      </TableCell>
+                      <TableCell align="center" className="cell-center">
+                        {row.co}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button size="small" color="primary" onClick={this.handleDialogClick}>
+            关闭
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
     return (
       <Card className="layer">
         <CardHeader
@@ -301,7 +423,17 @@ class LocationInfo extends React.Component {
           <CardMedia>
             <ReactEcharts option={this.state.options} className="pm2_5_chart" />
           </CardMedia>
+          <CardActions>
+            <Button
+              size="small"
+              color="primary"
+              onClick={this.handleDialogClick}
+            >
+              查看全国AQI排名
+            </Button>
+          </CardActions>
         </Collapse>
+        {aqiDialog}
       </Card>
     );
   }
@@ -454,6 +586,15 @@ class LocationInfo extends React.Component {
       return data;
     } catch (err) {
       console.error(err);
+    }
+  }
+  async getStationAqi() {
+    try {
+      let result = await axios.get("/getChinaAqi");
+      let data = result.data.data;
+      this.setState(data);
+    } catch (error) {
+      console.error(error);
     }
   }
 }
