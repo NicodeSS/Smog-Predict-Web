@@ -15,7 +15,6 @@ import {
   Grid,
   IconButton,
   Slider,
-  Paper,
   TableCell,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -246,7 +245,7 @@ class LocationInfo extends React.Component {
       self.geocoder = new AMap.Geocoder({ city: "全国" });
     });
     this.state = {
-      currentLocation: "Test",
+      currentLocation: "正在加载……",
       lng: 0,
       lat: 0,
       options: {},
@@ -255,8 +254,6 @@ class LocationInfo extends React.Component {
       expanded: true,
       dialog: false,
       station: [],
-      order: "desc",
-      orderBy: "aqi",
     };
     this.marks = [
       {
@@ -289,8 +286,7 @@ class LocationInfo extends React.Component {
     this.getStationAqi();
   }
   handleExpandClick() {
-    let cur = this.state.expanded;
-    this.setState({ expanded: !cur });
+    this.setState({ expanded: !this.state.expanded });
   }
   handleDialogClick() {
     this.setState({ dialog: !this.state.dialog });
@@ -317,7 +313,6 @@ class LocationInfo extends React.Component {
     const aqiDialog = (
       <Dialog
         fullScreen
-        className="aqi-dialog"
         open={this.state.dialog}
         onClose={this.handleDialogClick}
         aria-labelledby="form-dialog-title"
