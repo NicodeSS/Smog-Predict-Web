@@ -505,7 +505,6 @@ class LocationInfo extends React.Component {
           latitude: lnglat[1],
         });
         data = result.data.data;
-        console.log(data);
       } else {
         data = {
           "PM2.5": [
