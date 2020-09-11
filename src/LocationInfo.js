@@ -76,7 +76,7 @@ function getAQIColor(value, type) {
     {
       gt: 50,
       lte: 100,
-      color: "#ffde33",
+      color: "#d4d000",
     },
     {
       gt: 100,
